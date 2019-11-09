@@ -4,8 +4,17 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.IO;
+using System.Linq;
+using System;
 
-
+/// <summary>
+/// File Name: BackgroundController.cs
+/// Author: Kevin Yuayan
+/// Last Modified by: Kevin Yuayan
+/// Date Last Modified: Nov. 9, 2019
+/// Description: Controler for the GameController object
+/// Revision History:
+/// </summary>
 public class GameController : MonoBehaviour
 {
     [Header("Scene Game Objects")]
@@ -39,6 +48,10 @@ public class GameController : MonoBehaviour
 
     [Header("UI Control")]
     public ScoreBoard scoreBoard;
+
+    [Header("Scene Settings")]
+    public List<SceneSettings> sceneSettings;
+    public SceneSettings activeSceneSettings;
     // public properties
     public int Lives
     {
@@ -50,9 +63,11 @@ public class GameController : MonoBehaviour
         set
         {
             _lives = value;
-            if(_lives < 1)
+            scoreBoard.lives = _lives;
+
+            if (_lives < 1 && activeSceneSettings.scene != Scene.END)
             {
-                
+                scoreBoard.lives = _lives;
                 SceneManager.LoadScene("End");
             }
             else
@@ -73,13 +88,11 @@ public class GameController : MonoBehaviour
         set
         {
             _score = value;
-
+            scoreBoard.score = _score;
 
             if (scoreBoard.highScore < _score)
-            //if (highScoreSO.score < _score)
             {
                 scoreBoard.highScore = _score;
-                //highScoreSO.score = _score;
             }
             scoreLabel.text = "Score: " + _score;
         }
@@ -105,36 +118,42 @@ public class GameController : MonoBehaviour
 
     private void SceneConfiguration()
     {
-        switch (SceneManager.GetActiveScene().name)
+
+        // Linq statement
+        // finds the sceneSetting that matches the Scene enum parsed from GetActiveScene().name
+        var query = from settings in sceneSettings
+                    where settings.scene == (Scene)Enum.Parse(typeof(Scene), SceneManager.GetActiveScene().name.ToUpper())
+                    select settings;
+
+        activeSceneSettings = query.ToList().First();
+
         {
-            case "Start":
-                scoreLabel.enabled = false;
-                livesLabel.enabled = false;
-                highScoreLabel.enabled = false;
-                endLabel.SetActive(false);
-                restartButton.SetActive(false);
-                activeSoundClip = SoundClip.NONE;
-                break;
-            case "Main":
-                highScoreLabel.enabled = false;
-                startLabel.SetActive(false);
-                startButton.SetActive(false);
-                endLabel.SetActive(false);
-                restartButton.SetActive(false);
-                activeSoundClip = SoundClip.ENGINE;
-                break;
-            case "End":
-                scoreLabel.enabled = false;
-                livesLabel.enabled = false;
-                startLabel.SetActive(false);
-                startButton.SetActive(false);
-                activeSoundClip = SoundClip.NONE;
-                highScoreLabel.text = "High Score: " + scoreBoard.highScore;
-                break;
+            if(activeSceneSettings.scene == Scene.MAIN || activeSceneSettings.scene == Scene.START)
+            {
+                Lives = 5;
+                Score = 0;
+            }
+            else
+            {
+                Lives = scoreBoard.lives;
+                Score = scoreBoard.score;
+            }
+
+            activeSoundClip = activeSceneSettings.activeSoundClip;
+
+            scoreLabel.enabled = activeSceneSettings.scoreLabelEnabled;
+            livesLabel.enabled = activeSceneSettings.livesLabelEnabled;
+
+            highScoreLabel.enabled = activeSceneSettings.highScoreLabelEnabled;
+            endLabel.SetActive(activeSceneSettings.endLabelEnabled);
+            startLabel.SetActive(activeSceneSettings.startLabelEnabled);
+
+            startButton.SetActive(activeSceneSettings.startButtonActive);
+            restartButton.SetActive(activeSceneSettings.restartButtonActive);
+
+            highScoreLabel.text = "HighScore: " + scoreBoard.highScore;
         }
 
-        Lives = 5;
-        Score = 0;
 
 
         if ((activeSoundClip != SoundClip.NONE) && (activeSoundClip != SoundClip.NUM_OF_CLIPS))
@@ -157,12 +176,6 @@ public class GameController : MonoBehaviour
         }
 
         Instantiate(island);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     // Event Handlers

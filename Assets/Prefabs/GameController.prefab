@@ -353,3 +353,9 @@ MonoBehaviour:
   endLabel: {fileID: 0}
   restartButton: {fileID: 0}
   scoreBoard: {fileID: 11400000, guid: f2f60f3864d0b06469a3a92c8fc5b84d, type: 2}
+  sceneSettings:
+  - {fileID: 11400000, guid: 4586e2c179a32f843b5b928a25deb82d, type: 2}
+  - {fileID: 11400000, guid: 75d0c8ecb2328c3489e01c8d9158bae8, type: 2}
+  - {fileID: 11400000, guid: 7a35fc6f13c0a30409982d2e90854c0a, type: 2}
+  - {fileID: 11400000, guid: d0616897f4f435149a7bf766327f6bea, type: 2}
+  activeScene: {fileID: 0}
