@@ -29,8 +29,6 @@ public class GameController : MonoBehaviour
     public Text scoreLabel;
     public Text highScoreLabel;
 
-    public GameObject scoreBoard;
-
     //public HighScoreSO highScoreSO;
 
     [Header("UI Control")]
@@ -39,6 +37,8 @@ public class GameController : MonoBehaviour
     public GameObject endLabel;
     public GameObject restartButton;
 
+    [Header("UI Control")]
+    public ScoreBoard scoreBoard;
     // public properties
     public int Lives
     {
@@ -57,7 +57,7 @@ public class GameController : MonoBehaviour
             }
             else
             {
-                livesLabel.text = "Lives: " + _lives.ToString();
+                livesLabel.text = "Lives: " + _lives;
             }
            
         }
@@ -75,13 +75,13 @@ public class GameController : MonoBehaviour
             _score = value;
 
 
-            if (scoreBoard.GetComponent<ScoreBoard>().highScore < _score)
+            if (scoreBoard.highScore < _score)
             //if (highScoreSO.score < _score)
             {
-                scoreBoard.GetComponent<ScoreBoard>().highScore = _score;
+                scoreBoard.highScore = _score;
                 //highScoreSO.score = _score;
             }
-            scoreLabel.text = "Score: " + _score.ToString();
+            scoreLabel.text = "Score: " + _score;
         }
     }
 
@@ -94,8 +94,6 @@ public class GameController : MonoBehaviour
 
     private void GameObjectInitialization()
     {
-        scoreBoard = GameObject.Find("ScoreBoard");
-
         startLabel = GameObject.Find("StartLabel");
         endLabel = GameObject.Find("EndLabel");
         startButton = GameObject.Find("StartButton");
@@ -131,7 +129,7 @@ public class GameController : MonoBehaviour
                 startLabel.SetActive(false);
                 startButton.SetActive(false);
                 activeSoundClip = SoundClip.NONE;
-                highScoreLabel.text = "High Score: " + scoreBoard.GetComponent<ScoreBoard>().highScore;
+                highScoreLabel.text = "High Score: " + scoreBoard.highScore;
                 break;
         }
 
@@ -170,7 +168,6 @@ public class GameController : MonoBehaviour
     // Event Handlers
     public void OnStartButtonClick()
     {
-        DontDestroyOnLoad(scoreBoard);
         SceneManager.LoadScene("Main");
     }
 
